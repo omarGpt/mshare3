@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>منشئ كود بلوجر العقاري</title>
+    <style>
+        body {
+            font-family: 'Tahoma', sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        .section {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-top: 20px;
+            background: #fff;
+            border-radius: 8px;
+        }
+        .features input[type="checkbox"] {
+            margin-left: 5px;
+        }
+        .generate-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        textarea#finalCode {
+            height: 400px;
+            margin-top: 20px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>مولد كود بلوجر العقاري</h1>
+    
+    <div class="section">
+        <label>روابط صور السلايدر (افصل كل رابط بسطر):</label>
+        <textarea id="sliderImages"></textarea>
+
+        <label>السعر:</label>
+        <input type="text" id="price">
+
+        <label>النوع:</label>
+        <input type="text" id="type">
+
+        <label>الحالة:</label>
+        <input type="text" id="status">
+
+        <label>الموقع:</label>
+        <input type="text" id="location">
+
+        <label>العنوان:</label>
+        <input type="text" id="address">
+
+        <label>الدولة:</label>
+        <input type="text" id="country">
+
+        <label>المحافظة:</label>
+        <input type="text" id="governorate">
+
+        <label>المدينة:</label>
+        <input type="text" id="city">
+
+        <label>الحي / المنطقة:</label>
+        <input type="text" id="area">
+
+        <label>عدد الغرف:</label>
+        <input type="text" id="rooms">
+
+        <label>عدد الحمامات:</label>
+        <input type="text" id="baths">
+
+        <label>المساحة:</label>
+        <input type="text" id="space">
+
+        <label>رابط خرائط جوجل:</label>
+        <input type="text" id="mapLink">
+    </div>
+
+    <div class="section features">
+        <label>المميزات:</label>
+        <label><input type="checkbox" value="تكييف هواء">تكييف هواء</label>
+        <label><input type="checkbox" value="كاميرات مراقبة">كاميرات مراقبة</label>
+        <label><input type="checkbox" value="إنترنت واي فاي">إنترنت واي فاي</label>
+        <label><input type="checkbox" value="حمام سباحة">حمام سباحة</label>
+        <label><input type="checkbox" value="مجفف ملابس">مجفف ملابس</label>
+        <label><input type="checkbox" value="سوق قريب">سوق قريب</label>
+        <label><input type="checkbox" value="مسجد قريب">مسجد قريب</label>
+        <!-- يمكن إضافة المزيد -->
+    </div>
+
+    <div class="section">
+        <label>تقسيم الأدوار (لكل دور: الاسم | المساحة | رابط صورة المخطط):</label>
+        <textarea id="floors" placeholder="مثال:\nالدور الأرضي | 160 م | https://example.com/floor1.jpg\nالدور الأول | 145 م | https://example.com/floor2.jpg"></textarea>
+    </div>
+
+    <button class="generate-btn" onclick="generateCode()">توليد الكود</button>
+
+    <textarea id="finalCode" readonly></textarea>
+
+    <script>
+        function generateCode() {
+            const sliderImages = document.getElementById("sliderImages").value.trim().split("\n").filter(Boolean);
+            const price = document.getElementById("price").value.trim();
+            const type = document.getElementById("type").value.trim();
+            const status = document.getElementById("status").value.trim();
+            const location = document.getElementById("location").value.trim();
+            const address = document.getElementById("address").value.trim();
+            const country = document.getElementById("country").value.trim();
+            const governorate = document.getElementById("governorate").value.trim();
+            const city = document.getElementById("city").value.trim();
+            const area = document.getElementById("area").value.trim();
+            const rooms = document.getElementById("rooms").value.trim();
+            const baths = document.getElementById("baths").value.trim();
+            const space = document.getElementById("space").value.trim();
+            const mapLink = document.getElementById("mapLink").value.trim();
+
+            const features = Array.from(document.querySelectorAll('.features input[type="checkbox"]:checked')).map(el => `<li><i class='ticky'></i>${el.value}</li>`).join('\n');
+
+            const floorLines = document.getElementById("floors").value.trim().split("\n").filter(Boolean);
+            const floorsHTML = floorLines.map(line => {
+                const [name, area, img] = line.split("|").map(s => s.trim());
+                return `<details class="ac" open><summary><h5>${name}</h5><span>المساحة ${area}</span></summary><div class="aC"><p><img src='${img}'/></p></div></details>`;
+            }).join('\n');
+
+            const sliderImgs = sliderImages.map((src, i) => `<img alt="house" src="${src}" class="${i === 0 ? 'active' : 'inactive'}" />`).join('\n');
+            const thumbnails = sliderImages.map((src, i) => `<img alt="house" src="${src}" data-index="${i}"/>`).join('\n');
+
+            const htmlCode = `<!-- سيتم هنا إدراج الكود بناءً على النموذج الأصلي بنفس التنسيق -->\n<!-- slider start -->\n<div class="slider-container">\n    <div class="slider-images">\n        ${sliderImgs}\n    </div>\n    <div class="thumbnail-container">\n        ${thumbnails}\n    </div>\n    <div class="arrow arrow-left" onclick="moveSlide(-1)">&#10094;</div>\n    <div class="arrow arrow-right" onclick="moveSlide(1)">&#10095;</div>\n</div>\n\n<!-- price & details -->\n<div class="table-wrap"><div class='price-banner'><span class='perga'/> </div><div class="table"><table><thead><tr><th>النوع</th><th>${type}</th></tr></thead><tbody><tr><td>الحالة</td><td>${status}</td></tr><tr><td>الموقع</td><td>${location}</td></tr><tr><td>عدد الغرف</td><td>${rooms}</td></tr><tr><td>الحمامات</td><td>${baths}</td></tr><tr><td>المساحة</td><td>${space}</td></tr></tbody></table></div></div>\n\n<!-- location -->\n<div class='head-addr'><h2>تفاصيل الموقع الجغرافي</h2><a href='${mapLink}' target='_blank' class='button maper'>افتح على خرائط جوجل</a></div>\n<ul class="address-b bow">\n<li><strong>العنوان</strong><span>${address}</span></li>\n<li><strong>الدولة</strong><span>${country}</span></li>\n<li><strong>المحافظة</strong><span>${governorate}</span></li>\n<li><strong>المدينة</strong><span>${city}</span></li>\n<li><strong>الحي / المنطقة</strong><span>${area}</span></li>\n</ul>\n\n<!-- features -->\n<h2>الميزات</h2>\n<ul class="property-b bow">${features}</ul>\n\n<!-- floors -->\n<h2>تقسيم الأدوار</h2><div class="showH">${floorsHTML}</div>`;
+
+            document.getElementById("finalCode").value = htmlCode;
+        }
+    </script>
+</body>
+</html>
